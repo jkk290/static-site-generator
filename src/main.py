@@ -1,6 +1,8 @@
-from textnode import TextNode
+from textnode import TextNode, TextType
+
 def main():
-    new_textNode = TextNode("hello there", "bold")
+    new_textNode = TextNode("hello there", TextType.BOLD)
     print(new_textNode)
 
-main()
+if __name__ == "__main__":
+    main()
