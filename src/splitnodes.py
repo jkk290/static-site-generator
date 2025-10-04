@@ -50,3 +50,32 @@ def split_nodes_image(old_nodes):
             new_nodes.append(TextNode(remaining, TextType.TEXT))
 
     return new_nodes
+
+def split_nodes_link(old_nodes):
+    new_nodes = []
+    for old_node in old_nodes:
+        if old_node.text_type != TextType.TEXT:
+            new_nodes.append(old_node)
+            continue
+
+        extracted = extract_markdown_links(old_node.text)
+        if not extracted:
+            new_nodes.append(old_node)
+            continue
+
+        remaining = old_node.text
+        for text, url in extracted:
+            delim = f"[{text}]({url})"
+            sections = remaining.split(delim, 1)
+            left = sections[0]
+            right = sections[1] if len(sections) == 2 else ""
+
+            if left:
+                new_nodes.append(TextNode(left, TextType.TEXT))
+            new_nodes.append(TextNode(text, TextType.LINK, url))
+            remaining = right
+
+        if remaining:
+            new_nodes.append(TextNode(remaining, TextType.TEXT))
+
+    return new_nodes
