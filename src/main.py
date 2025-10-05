@@ -1,6 +1,6 @@
 import os
-import shutil
-from textnode import TextNode, TextType
+from copystatic import copy_contents
+from generatepage import generate_page
 
 def main():
     project_root = os.path.dirname(os.path.dirname(__file__))
@@ -8,22 +8,27 @@ def main():
     dest_dir = os.path.join(project_root, "public")
     copy_contents(src_dir, dest_dir, True)
 
-def copy_contents(src_dir, dest_dir, first_call):
-    if not os.path.exists(src_dir):
-        return
-    
-    if first_call and os.path.exists(dest_dir):
-        shutil.rmtree(dest_dir)
-        
-    os.makedirs(dest_dir, exist_ok=True)
+    gen_src = os.path.join(project_root,"content/index.md")
+    gen_tmp = os.path.join(project_root, "template.html")
+    gen_dest = os.path.join(project_root, "public/index.html")
 
-    dir_contents = os.listdir(src_dir)
-    for content in dir_contents:
-        content_src_path = os.path.join(src_dir, content)
-        content_dest_path = os.path.join(dest_dir, content)
-        if os.path.isfile(content_src_path):                
-            shutil.copy(content_src_path, content_dest_path)
-        elif os.path.isdir(content_src_path):
-            copy_contents(content_src_path, content_dest_path, False)
+    glorfindel_src = os.path.join(project_root, "content/blog/glorfindel/index.md")
+    glorfindel_dest = os.path.join(project_root, "public/blog/glorfindel/index.html")
+
+    maj_src = os.path.join(project_root, "content/blog/majesty/index.md")
+    maj_dest = os.path.join(project_root, "public/blog/majesty/index.html")
+
+    tom_src = os.path.join(project_root, "content/blog/tom/index.md")
+    tom_dest = os.path.join(project_root, "public/blog/tom/index.html")
+
+    contact_src = os.path.join(project_root, "content/contact/index.md")
+    contact_dest = os.path.join(project_root, "public/contact/index.html")
+
+    generate_page(gen_src, gen_tmp, gen_dest)
+    generate_page(glorfindel_src, gen_tmp, glorfindel_dest)
+    generate_page(maj_src, gen_tmp, maj_dest)
+    generate_page(tom_src, gen_tmp, tom_dest)
+    generate_page(contact_src, gen_tmp, contact_dest)
+
 
 main()
