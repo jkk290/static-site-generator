@@ -1,7 +1,7 @@
 import os
 from markdown_blocks import markdown_to_html_node, extract_title
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
 
     with open(from_path) as m: md = m.read()
@@ -12,13 +12,16 @@ def generate_page(from_path, template_path, dest_path):
     title = extract_title(md)
 
     new_html = template.replace("{{ Title }}", title)
-    finished_html = new_html.replace("{{ Content }}", html_string)
+    new_html = new_html.replace("{{ Content }}", html_string)
+
+    new_html = new_html.replace("href=\"/", f"href=\"{basepath}")
+    finished_html = new_html.replace("src=\"/", f"src=\"{basepath}")
 
     os.makedirs(os.path.dirname(dest_path), exist_ok=True)
 
     with open(dest_path, "w") as f: f.write(finished_html)
 
-def generate_page_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_page_recursive(dir_path_content, template_path, dest_dir_path, basepath):
     if not os.path.exists(dir_path_content):
         return
     
@@ -28,7 +31,7 @@ def generate_page_recursive(dir_path_content, template_path, dest_dir_path):
 
         if os.path.isdir(content_src_path):
             new_dest_dir_path = os.path.join(dest_dir_path, content)
-            generate_page_recursive(content_src_path, template_path, new_dest_dir_path)
+            generate_page_recursive(content_src_path, template_path, new_dest_dir_path, basepath)
         else:
             dest_content = content.replace(".md", ".html")
             content_dest_path = os.path.join(dest_dir_path, dest_content)
@@ -43,7 +46,10 @@ def generate_page_recursive(dir_path_content, template_path, dest_dir_path):
             title = extract_title(md)
 
             new_html = template.replace("{{ Title }}", title)
-            finished_html = new_html.replace("{{ Content }}", html_string)
+            new_html = new_html.replace("{{ Content }}", html_string)
+
+            new_html = new_html.replace("href=\"/", f"href=\"{basepath}")
+            finished_html = new_html.replace("src=\"/", f"src=\"{basepath}")
 
             os.makedirs(os.path.dirname(content_dest_path), exist_ok=True)
 
