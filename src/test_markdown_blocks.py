@@ -4,6 +4,7 @@ from markdown_blocks import (
     markdown_to_blocks,
     block_to_block_type,
     BlockType,
+    extract_title
 )
 
 
@@ -162,6 +163,26 @@ the **same** even with inline stuff
             html,
             "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>",
         )
+    
+    def test_extract_title(self):
+        title = extract_title(
+            "# Hello Friends!"
+        )
+        self.assertEqual(
+            title,
+            "Hello Friends!"
+        )
+    
+    def test_extract_title_no_h1(self):
+        with self.assertRaises(Exception):
+            title = extract_title("### This is an h3")
+    
+    def test_extract_title_multi_lines(self):
+        title = extract_title(
+            """# Hello there
+            friend"""
+        )
+        self.assertEqual(title, "Hello there")
 
 
 if __name__ == "__main__":
